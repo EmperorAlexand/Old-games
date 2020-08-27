@@ -1,6 +1,7 @@
-import pygame
+import pygame, sys, os
 from random import *
 from winsound import Beep
+from pygame.locals import *
 
 pygame.init()
 
@@ -15,6 +16,8 @@ clock = pygame.time.Clock()
 black = (0,0,0)
 white = (255,255,255)
 red = (255,0,0)
+green = (0, 255, 0)
+darkgreen = (0, 200, 0)
 
 length = 1
 
@@ -29,6 +32,9 @@ snake_dir = None
 
 food_x = randint(0, 39) * 20
 food_y = randint(0, 29) * 20
+
+snake = pygame.image.load(os.path.join("snake_r.png"))
+snake.convert()
 
 while True:
     
@@ -57,12 +63,20 @@ while True:
 
     if snake_dir == 'x-':
         xTo = -20
+        snake = pygame.image.load(os.path.join("snake_l.png"))
+        snake.convert()
     if snake_dir == 'x+':
         xTo = 20
+        snake = pygame.image.load(os.path.join("snake_r.png"))
+        snake.convert()
     if snake_dir == 'y-':
         yTo = -20
+        snake = pygame.image.load(os.path.join("snake_u.png"))
+        snake.convert()
     if snake_dir == 'y+':
         yTo = 20
+        snake = pygame.image.load(os.path.join("snake_d.png"))
+        snake.convert()
 
     if parts[-1][0] == food_x and parts[-1][1] == food_y:
         food_x = randint(0, 39) * 20
@@ -71,6 +85,7 @@ while True:
         parts.insert(0, [])
         parts[0].insert(0, parts[1][0])
         parts[0].insert(1, parts[1][1])
+        Beep(1000, 10)
 
     gameDisplay.fill(black)
 
@@ -80,12 +95,19 @@ while True:
         try:
             for i in range(len(parts)):
                 parts[i] = [parts[i + 1][0], parts[i + 1][1]]
-                pygame.draw.rect(gameDisplay, white, (parts[i][0], parts[i][1], 20, 20))
+                if i != len(parts) - 2:
+                    if i % 2 == 0:
+                        pygame.draw.rect(gameDisplay, green, (parts[i][0], parts[i][1], 20, 20))
+                    else:
+                        pygame.draw.rect(gameDisplay, darkgreen, (parts[i][0], parts[i][1], 20, 20))
+                else:
+                    gameDisplay.blit(snake, (parts[i][0], parts[i][1]))
+                    pygame.display.flip()
+                    
         except IndexError:
             pass
     else:
-        pygame.draw.rect(gameDisplay, white, (parts[0][0], parts[0][1], 20, 20))
-        
+        pygame.draw.rect(gameDisplay, green, (parts[0][0], parts[0][1], 20, 20))
 
     pygame.draw.rect(gameDisplay, red, (food_x, food_y, 20, 20))
 
